@@ -1,0 +1,155 @@
+#!/bin/bash
+
+# Admin password
+admin_password="admin123"
+
+# Array to store order details
+order_details=()
+
+# Function to display admin panel
+admin_panel() {
+    clear
+    echo "Admin Panel"
+    echo "1. Add Food Item"
+    echo "2. View Order Details"
+    echo "3. Exit"
+
+    read -p "Enter your choice: " admin_choice
+
+    case $admin_choice in
+        1)
+            add_food_item
+            ;;
+        2)
+            view_order_details
+            ;;
+        3)
+            echo "Exiting Admin Panel..."
+            exit 0
+            ;;
+        *)
+            echo "Invalid choice"
+            admin_panel
+            ;;
+    esac
+}
+
+# Function to add new food item
+add_food_item() {
+    read -p "Enter the food name: " food_name
+    read -p "Enter the food size: " food_size
+    read -p "Enter the food price: " food_price
+
+    # Append the new food item to the menu file
+    echo "$food_name...$food_size...$food_price" >> menu.txt
+
+    echo "Food item added successfully!"
+    admin_panel
+}
+
+# Function to view order details
+view_order_details() {
+    echo "Order Details:"
+    if [ ${#order_details[@]} -eq 0 ]; then
+        echo "No orders have been placed yet."
+    else
+        for order in "${order_details[@]}"; do
+            echo "$order"
+        done
+    fi
+    admin_panel
+}
+
+echo "Welcome to Green University Campus"
+echo "Green Fast Food Canteen"
+echo "=======MENU========"
+
+echo ".... FOOD NAME........Size........Price....|||"
+echo "1...Burger...200/300g...130tk/180tk"
+echo "2....Chicken Pizza....8/10inch...120tk/150tk"
+echo "3....French Fry...300g.....70tk"
+echo "4....Coke......300/400/1000mg..30/40/50tk"
+echo "5....Coffee....250mg....65tk"
+
+echo "Enter your role:"
+echo "1. Customer"
+echo "2. Admin"
+read -p "Enter your choice: " role
+
+if (($role == 1)); then
+    order_finished=false
+
+    while [[ $order_finished == false ]]; do
+        read -p "What do you want to order? (0 to finish): " choice
+
+        if (($choice == 0)); then
+            order_finished=true
+            break
+        fi
+
+        if (($choice >= 1 && $choice <= 5)); then
+            case $choice in
+                1)
+                    read -p "Which size of burger do you want? (1. 200g / 2. 300g): " burger_size
+                    if (($burger_size == 1)); then
+                        read -p "How many burgers do you want? " burger_quantity
+                        order_details+=("Burger 200g - Quantity: $burger_quantity")
+                    elif (($burger_size == 2)); then
+                        read -p "How many burgers do you want? " burger_quantity
+                        order_details+=("Burger 300g - Quantity: $burger_quantity")
+                    fi
+                    ;;
+                2)
+                    read -p "Which size pizza do you want? (1. 8inch / 2. 10inch): " pizza_size
+                    if (($pizza_size == 1)); then
+                        read -p "How many pizzas do you want? " pizza_quantity
+                        order_details+=("Chicken Pizza 8inch - Quantity: $pizza_quantity")
+                    elif (($pizza_size == 2)); then
+                        read -p "How many pizzas do you want? " pizza_quantity
+                        order_details+=("Chicken Pizza 10inch - Quantity: $pizza_quantity")
+                    fi
+                    ;;
+                3)
+                    read -p "How many plates of French Fries do you want? " ff_quantity
+                    order_details+=("French Fries - Quantity: $ff_quantity")
+                    ;;
+                4)
+                    read -p "Which size Coke do you want? (1. 300ml / 2. 400ml / 3. 1litre): " coke_size
+                    if (($coke_size == 1)); then
+                        read -p "How many Cokes do you want? " coke_quantity
+                        order_details+=("Coke 300ml - Quantity: $coke_quantity")
+                    elif (($coke_size == 2)); then
+                        read -p "How many Cokes do you want? " coke_quantity
+                        order_details+=("Coke 400ml - Quantity: $coke_quantity")
+                    elif (($coke_size == 3)); then
+                        read -p "How many Cokes do you want? " coke_quantity
+                        order_details+=("Coke 1litre - Quantity: $coke_quantity")
+                    fi
+                    ;;
+                5)
+                    read -p "How many cups of Coffee do you want? " coffee_quantity
+                    order_details+=("Coffee 250ml - Quantity: $coffee_quantity")
+                    ;;
+                *)
+                    echo "Invalid choice"
+                    continue
+                    ;;
+            esac
+
+            echo "Your order has been placed successfully!"
+        else
+            echo "Invalid choice"
+        fi
+    done
+
+    echo "Thank you for purchasing food from our restaurant! :)"
+else
+    read -p "Enter the admin password: " password
+
+    if [[ $password == $admin_password ]]; then
+        admin_panel
+    else
+        echo "Invalid password. Exiting..."
+        exit 1
+    fi
+fi
